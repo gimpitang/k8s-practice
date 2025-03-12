@@ -1,0 +1,27 @@
+# 메트릭 서버 설치
+# kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+# 메트릭 서버와 HPA를 통한 pod 현황 조회
+# kubectl get hpa yj-order-backend-hpa -n yjchoi-ns -w
+
+# 부하 간단 테스트
+# while true; do curl -s http://yj-order-backend-service/product/list; done
+
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: yj-order-backend-hpa
+  namespace: yjchoi-ns
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: yj-order-backend
+  minReplicas: 2
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 10
+
+
+
+  # 부하 테스트를 위해 매트릭과 hpa자원이 필요하다.

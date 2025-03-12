@@ -3,7 +3,6 @@ package com.example.ordersystem.common.config;
 import com.example.ordersystem.common.auth.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -17,47 +16,49 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
-@EnableMethodSecurity // PreAuthorize 사용 시 해당 어노테이션 선언 필요
+@EnableMethodSecurity //PreAuthorize 사용시 해당 어노테이션 필요
 public class SecurityConfig {
-    private final JwtAuthFilter authFilter;
+    private final JwtAuthFilter jwtAuthFilter;
 
-    public SecurityConfig(JwtAuthFilter authFilter) {
-        this.authFilter = authFilter;
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-
         return httpSecurity
-                //      spring security 에서 cors 정책 지정
-                .cors(c -> c.configurationSource(corsConfiguration()))
-                .csrf(AbstractHttpConfigurer::disable) //       csrf 비활성화
-                .httpBasic(AbstractHttpConfigurer::disable) //      http basic 보안방식 비뢀성화
-                //      세션로그인 방식 사용하지 않는다는 것을 의미
-                .sessionManagement(s-> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                //      token을 검증하고, token을 통해 Authentication 생성
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                //      .authenticated() : 모든 요청에 대해서 Authentication 객체가 생성되기를 요구.
-                .authorizeHttpRequests(a->a.requestMatchers("/member/create","member/doLogin","member/refresh-token", "product/list").permitAll().anyRequest().authenticated())
+//                spring security에서 cors 정책 지정
+                .csrf(AbstractHttpConfigurer::disable) //csrf 보안공격 비활성화
+                .httpBasic(AbstractHttpConfigurer::disable) //HTTP basic 보안 방식 비활성화
+//                세션 로그인 방식 사용하지 않는다는 것을 의미
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authenticated() : 모든 요청에 대해서 Authentication 객체가 생성되기를 요구
+                .authorizeHttpRequests(a -> a.requestMatchers("/member/create", "member/doLogin", "product/list", "/member/refresh-token")
+                        .permitAll().anyRequest().authenticated())
+                .addFilterBefore(new CorsFilter(corsConfigurationSource()), UsernamePasswordAuthenticationFilter.class)
+                //                토큰을 검증하고, 토큰을 통해 Authentication 객체를 생성
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                
                 .build();
     }
 
-    private CorsConfigurationSource corsConfiguration() {
+    private CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://www.youngjae.shop"));
-        configuration.setAllowedMethods(Arrays.asList("*"));            //     모든 HTTP메서드(get, post, patch 등) 허용
-        configuration.setAllowedHeaders(Arrays.asList("*"));            //     모든 헤더 허용
-        configuration.setAllowCredentials(true);                        //     자격증명 허용(인증처리 하겠다는 뜻)
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);  //      모든 url 패턴에 대해 cors 설정 적용
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://www.junan.shop"));
+        configuration.setAllowedMethods(Arrays.asList("*")); //모든 HTTP 메서드 허용
+        configuration.setAllowedHeaders(Arrays.asList("*")); //모든 헤더값 허용
+        configuration.setAllowCredentials(true); //자격 증명 허용
 
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); //모든 url 패턴에 대해 cors 허용 설정
         return source;
     }
 
     @Bean
-    public PasswordEncoder makePassword() {
+    public PasswordEncoder makePassword(){
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
