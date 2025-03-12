@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: yjchoi-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-nginx
+  template:
+    metadata:
+      labels:
+        app: my-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: yjchoi-ns
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: my-nginx
+---
+
+# ingress-controller 설치 명령어
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/aws/deploy.yaml
+# 이거 하면 elb가 3개 생기게 됨. (이건 alb가 아니ㅏ라 nlb임임)
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  namespace: yjchoi-ns
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1 #첫번쨰 prefix제거 --> msa 아키텍쳐에서 /member-service 붙여서 (gateway.yml) 에  있는거랑 비슷한거임.
+    cert-manager.io/cluster-issuer: my-issuer
+spec:
+  tls:
+  - hosts:
+    - "server.youngjae.shop"
+    secretName: server-youngjae-com-tls
+  rules:
+  - host: server.youngjae.shop  # 설정하려는 도메인 이름. 제외시에 elb(alb+nlb 싸잡아 부르는 말) 주소로도 접근할수 있는 모든 도메인 접근 가능.
+    http:
+      paths:
+      - path: /youngjae/(.*) #모든 url요청을 nginx-service로 라우팅 --> server.youngjae.shop/youngjae로 들어가야 nginx 화면이 나옴옴
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-service
+            port:
+              number: 80
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+# cert-manager.io/cluster-issuer: my-issuer --> 48번줄
+  name: my-issuer
+  namespace: yjchoi-ns
+spec:
+  acme:
+  # 인증서 서버 주소. 해당 서버의 리소스를 통해 인증서 발행
+    server: https://acme-v02.api.letsencrypt.org/directory
+  # 인증서 만료 또는 갱신 필요시 알람 email
+    email: dudwodpdy@gmail.com   #ksg3941234
+    privateKeySecretRef:
+      name: my-issuer
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+---
+# 3.ClusterIssue를 사용하여 Certificate 리소스 생성 : Certificate리소스 생성시에 인증서 발급
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+# 53번줄줄
+  name: server-youngjae-com-tls
+  namespace: yjchoi-ns
+spec:
+# 53번줄줄
+  secretName: server-youngjae-com-tls
+  duration: 2160h #90day
+  renewBefore: 360h #before 15day
+  issuerRef:
+    name: my-issuer
+    kind: ClusterIssuer
+  commonName: server.youngjae.shop
+  dnsNames:
+  - server.youngjae.shop
+

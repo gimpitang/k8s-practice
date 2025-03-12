@@ -1,0 +1,39 @@
+spring:
+  redis:
+    host: ${REDIS_HOST}
+    port: 6379
+#    rabbit mq 지움
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DB_HOST}:3306/ordersystem #여기에 DB를 박아뒀기때문에 localhost 에서 시험이 안됨. 그래서 yml을 test용으로 하나 더 둬야함.
+    username: admin
+    password: ${DB_PW}
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MariaDBDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+jwt:
+  expiration: 50001
+  # 인코딩 된 32자 이상 필요.(특수문자 사용 안됨)
+  # beyoundaccesstokensecretkeybeyoundaccesstokensecretkeybeyoundaccesstokensecretkey
+  secretKey: YmV5b3VuZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5YmV5b3VuZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5YmV5b3VuZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5
+
+  # beyoundrefreshtokensecretkeybeyoundrefreshtokensecretkeybeyoundrefreshtokensecretkey
+  expirationRt: 288000
+  secretKeyRt: YmV5b3VuZHJlZnJlc2h0b2tlbnNlY3JldGtleWJleW91bmRyZWZyZXNodG9rZW5zZWNyZXRrZXliZXlvdW5kcmVmcmVzaHRva2Vuc2VjcmV0a2V5
+
+  # aws s3 계정 설정
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_KEY}
+      secret-key: ${AWS_SECRET}
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: youngjae-ordersystem-image

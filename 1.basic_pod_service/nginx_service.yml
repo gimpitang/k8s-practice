@@ -1,0 +1,22 @@
+# 서비스 자체는 라우트를 해주는 포트이다
+apiVersion: v1
+kind: Service
+metadata: 
+  name: nginx-service
+  namespace: yjchoi-ns
+# nodeport는 alb를 거치지 않고 바로 ec2로 접근하는 방법(잘 안씀씀)
+spec:
+  type: NodePort
+  ports:
+  - port: 80 #서비스의 포트
+    targetPort: 80 # pod의 포트
+    nodePort: 30083
+    # 노드포트 (외부에서 ec2 dns로 접근하기 위한 대외적인 포트)
+  selector: 
+    app: my-nginx 
+
+
+
+# 서비스 포트가 필요한 이유: 내부 통신을 위함. 각각 pod의 서비스로 가기 이유유
+# 한 서비스에 두개의 pod가 있을 수 있는데 서비스가 로드밸런싱도 하고, 내부 서버끼리 호출 할 때 서비스를 호출 할 수 있다.
+# 그렇지 않으면 외부로 나갔다가 다시 호출을 해야하는 비효율이 생김.

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+# name은 pod의 이름
+metadata: 
+  name: my-nginx
+  namespace: yjchoi-ns
+      # labels는 서비스의 서비스의 라우팅 대상이 되는 이름이고
+      # service의 selector.app을 통해 매핑핑
+  labels:
+    app: my-nginx
+spec:
+  containers:
+  - name: my-nginx
+    image: nginx
+    ports:
+    - containerPort: 80
