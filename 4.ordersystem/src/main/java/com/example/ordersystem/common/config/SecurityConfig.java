@@ -27,23 +27,22 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-//                spring security에서 cors 정책 지정
-                .csrf(AbstractHttpConfigurer::disable) //csrf 보안공격 비활성화
-                .httpBasic(AbstractHttpConfigurer::disable) //HTTP basic 보안 방식 비활성화
-//                세션 로그인 방식 사용하지 않는다는 것을 의미
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Spring Security에서 CORS 적용
+                .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authenticated() : 모든 요청에 대해서 Authentication 객체가 생성되기를 요구
-                .authorizeHttpRequests(a -> a.requestMatchers("/member/create", "member/doLogin", "product/list", "/member/refresh-token")
-                        .permitAll().anyRequest().authenticated())
-                .addFilterBefore(new CorsFilter(corsConfigurationSource()), UsernamePasswordAuthenticationFilter.class)
-                //                토큰을 검증하고, 토큰을 통해 Authentication 객체를 생성
+                .authorizeHttpRequests(a -> a
+                        .requestMatchers("/member/create", "/member/doLogin", "/product/list", "/member/refresh-token")
+                        .permitAll()
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                
                 .build();
     }
+
 
     private CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();

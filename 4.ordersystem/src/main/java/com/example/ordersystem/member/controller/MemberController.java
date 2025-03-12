@@ -52,6 +52,12 @@ public class MemberController {
         return new ResponseEntity<>(memberId,HttpStatus.CREATED);
     }
 
+    @GetMapping("/health")
+    public ResponseEntity<String> healthCheck() {
+        return ResponseEntity.ok("ok");
+    }
+
+
     @GetMapping("/list")
     @PreAuthorize("hasRole('ADMIN')") //        가장 쉽고 간단한 편한 방법.ROLE_ADMIN 할 필요 없이 ADMIN 만 쓰면 됨.
     //  단점: 필터레벨에서 예외처리를 해서 로그나 메시지를 내 마음대로 하기 힘듦.
