@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: yj-order-backend
-        image: 346903264902.dkr.ecr.ap-northeast-2.amazonaws.com/jy-order-backend:latest
+        image: 346903264902.dkr.ecr.ap-northeast-2.amazonaws.com/yj-order-backend:latest
         ports:
         - containerPort: 8080 # 스프링에서 쓰는 포트번호
         env:
