@@ -54,7 +54,7 @@ public class MemberController {
 
     @GetMapping("/health")
     public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("ok");
+        return ResponseEntity.ok("ok2");
     }
 
 
