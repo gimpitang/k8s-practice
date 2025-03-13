@@ -39,7 +39,7 @@ spec:
             secretKeyRef:
               name: yj-app-secrets
               key: AWS_SECRET
-        컨테이너 상태 확인 (healthcheck)
+        # 컨테이너 상태 확인 (healthcheck)
         readinessProbe:
           httpGet:
             # healthcheck 경로
