@@ -1,6 +1,7 @@
 spring:
   redis:
-    host: ${REDIS_HOST}
+    # host: ${REDIS_HOST}
+    host: redis-service
     port: 6379
 #    rabbit mq 지움
   datasource:
