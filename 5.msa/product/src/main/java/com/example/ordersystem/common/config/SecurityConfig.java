@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/member/create","/member/health", "/member/doLogin", "/product/list", "/member/refresh-token")
+                        .requestMatchers("/member/create","/member/health", "/ordering/health", "/product/health", "/member/doLogin", "/product/list", "/member/refresh-token")
                         .permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

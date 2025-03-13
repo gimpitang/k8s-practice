@@ -4,7 +4,7 @@ metadata:
   name: yj-msa-product-depl
   namespace: yjchoi-ns
 spec:
-  replicas: 2
+  replicas: 
   selector:
     matchLabels:
       app: yj-msa-product

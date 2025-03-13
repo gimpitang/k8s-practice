@@ -4,7 +4,7 @@ metadata:
   name: yj-msa-ordering-depl
   namespace: yjchoi-ns
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: yj-msa-ordering
