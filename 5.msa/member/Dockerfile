@@ -20,7 +20,7 @@ FROM openjdk:17-jdk-alpine
 WORKDIR /app
 
 # COPY --from=(가져올 from 위치) (실행할 파일의 위치) (내가 설정할 파일 이름)
-COPY --from=stage1 /app/build/libs/ordersystem-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=stage1 /app/build/libs/*.jar app.jar
 # COPY --from=stage1 /app/build/libs/*.jar app.jar  --> 이것도 가능능
 
 # 실행 : CMD 또는 ENTRYPOINT를 통해 컨테이너를 배열 형태의 명령어로 실행
