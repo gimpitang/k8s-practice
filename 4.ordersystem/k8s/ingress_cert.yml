@@ -27,7 +27,7 @@ spec:
           service:
             name: yj-order-backend-service
             port:
-              number: 80
+              number: 80 # ingress-ctl --> ingress --> ingress-ctl --> sercive --> pod
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
