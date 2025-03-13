@@ -29,11 +29,11 @@ spec:
             secretKeyRef:
               name: yj-app-secrets
               key: DB_PW
-        - name: REDIS_HOST
-          valueFrom:
-            secretKeyRef:
-              name: yj-app-secrets
-              key: REDIS_HOST
+        # - name: REDIS_HOST   # application.yml에 따로 만듦 + pod를 새로 만들기기
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: yj-app-secrets
+        #       key: REDIS_HOST
         - name: AWS_KEY
           valueFrom:
             secretKeyRef:
