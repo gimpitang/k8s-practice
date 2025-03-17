@@ -62,5 +62,4 @@ spec:
   - port: 80
     targetPort: 8080
   selector:
-    app: yj-msa-order
----
+    app: yj-msa-ordering
